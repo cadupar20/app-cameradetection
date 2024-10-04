@@ -20,3 +20,5 @@ Es requisito tener una camara conectada en la computadora.
 Para ejecutar el proyecto, se ejecuta:
 
 ❯ python app-cameradetection.py
+
+Reference: [https://dipankarmedh1.medium.com/real-time-object-detection-with-yolo-and-webcam-enhancing-your-computer-vision-skills-861b97c78993]
