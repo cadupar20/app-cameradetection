@@ -29,32 +29,51 @@ print(dir (cv2.face))
 
 # OpenCV trains a model from the images
 # NOTE FOR OpenCV2: remove '.face'
-#model = cv2.face.LBPHFaceRecognizer_create()
-model = cv2.face.EigenFaceRecognizer_create()
-model.train(images, lables)
+#recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer = cv2.face.EigenFaceRecognizer_create()
+recognizer.train(images, lables)
 
 # Part 2: Use fisherRecognizer on camera stream
 face_cascade = cv2.CascadeClassifier(haar_file)
 cap = cv2.VideoCapture(0)
 
 while True:
+    # Read a frame from the camera
     (_, im) = cap.read()
+    #Convert the frame to grayscale
     gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-    for (x, y, w, h) in faces:
-        cv2.rectangle(im, (x, y),(x + w,y + h),(255, 0, 0), 2)
+    # Detect faces in the grayscale frame
+    #faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+    detected_faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))#, flags=cv2.CASCADE_SCALE_IMAGE)
+
+    #Recognize and label the faces
+    for (x, y, w, h) in detected_faces:
+        #cv2.rectangle(im, (x, y),(x + w,y + h),(255, 0, 0), 2)
+        
+        #Convert the frame to grayscale
         face = gray[y:y + h, x:x + w]
+        #Resize the face so that it can be used in the model
         face_resize = cv2.resize(face, (width, height))
         
         # Try to recognize the face
-        prediction = model.predict(face_resize)
-        cv2.rectangle(im, (x, y), (x + w, y + h), (0, 255, 0), 3)
-        
-        if prediction[1] < 500:
-            cv2.putText(im,'%s - %.0f' % (names[prediction[0]],prediction[1]),(x-10, y-10), cv2.FONT_HERSHEY_PLAIN,1,(0, 255, 0))
+        #prediction = recognizer.predict(face_resize)
+        prediction = recognizer.predict(face_resize)
+        print('Predition: ', prediction)
+
+        if int(prediction[1]) > 500:
+            cv2.rectangle(im, (x, y), (x + w, y + h), (0, 255, 0), 3)
+            cv2.putText(im,'%s - %.0f' % (names[prediction[0]],prediction[1]),(x-10, y-10), cv2.FONT_HERSHEY_PLAIN,0.9,(0, 255, 0),2)
         else:
-            cv2.putText(im,'Desconocido',(x-10, y-10), cv2.FONT_HERSHEY_PLAIN,1,(0, 255, 0))
-        cv2.imshow('OpenCV', im)
-        key = cv2.waitKey(10)
+            cv2.putText(im,'Desconocido - %.0f' % (prediction[1]),(x-10, y-10), cv2.FONT_HERSHEY_PLAIN,1,(0, 255, 0),2)
+        
+        #Display the frame with face recognition
+        cv2.imshow('Recognize Face', im)
+        
+        key = cv2.waitKey(1)
         if key == 27:
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+#Release the camera and destroy all the windows
+cap.release()
+cv2.destroyAllWindows()
