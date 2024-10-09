@@ -39,3 +39,4 @@ La segunda funcion de este proyecto es #, donde integra la captura de rostros, a
 ## Reconocimiento de rostros en tiempo real del modelo entrenado
 3. recognize_faces()
    Reconocimiento de rostros en tiempo real del modelo de reconocimiento facial.
+
