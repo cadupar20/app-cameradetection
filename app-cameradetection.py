@@ -1,7 +1,8 @@
-from ultralytics import YOLO #pip install ultralytics
 
 import cv2 #pip install opencv-python
 import math 
+from ultralytics import YOLO #pip install ultralytics
+
 # start webcam
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)
